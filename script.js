@@ -16,28 +16,23 @@ const odds = [
     { stars: 1, chance: 50, pool: oneStar, color: "bronze" }
 ];
 
-// HTML elements
+// Elements
 const pullBtn = document.getElementById("pullBtn");
 const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 const resultContainer = document.getElementById("resultContainer");
 const historyContainer = document.getElementById("historyContainer");
+const costDisplay = document.getElementById("nextCostDisplay");
 
-// Pull cost tracking
+// Load cost from storage or start at 0
 let nextCost = parseInt(localStorage.getItem("nextCost")) || 0;
-
-// Display next cost under the pull button
-function updateNextCostDisplay() {
-    let costDisplay = document.getElementById("nextCostDisplay");
-    if (!costDisplay) {
-        costDisplay = document.createElement("p");
-        costDisplay.id = "nextCostDisplay";
-        pullBtn.insertAdjacentElement("afterend", costDisplay);
-    }
-    costDisplay.textContent = `Next Pull Cost: ${nextCost} gold`;
-}
 updateNextCostDisplay();
 
-// Load history from localStorage
+// Update cost display
+function updateNextCostDisplay() {
+    costDisplay.textContent = `Next Pull Cost: ${nextCost} gold`;
+}
+
+// Load history
 function loadHistory() {
     const savedHistory = JSON.parse(localStorage.getItem("pullHistory")) || [];
     historyContainer.innerHTML = "";
@@ -50,23 +45,25 @@ function loadHistory() {
 }
 loadHistory();
 
-// Save history to localStorage
+// Save to history
 function saveHistory(entry) {
     const history = JSON.parse(localStorage.getItem("pullHistory")) || [];
     history.unshift(entry);
     localStorage.setItem("pullHistory", JSON.stringify(history));
 }
 
-// Clear history + reset pull cost
+// Clear history + reset cost with confirmation
 clearHistoryBtn.addEventListener("click", () => {
-    localStorage.removeItem("pullHistory");
-    localStorage.setItem("nextCost", 0);
-    nextCost = 0;
-    updateNextCostDisplay();
-    historyContainer.innerHTML = "";
+    if (confirm("Are you sure you want to clear history and reset the gold cost?")) {
+        localStorage.removeItem("pullHistory");
+        localStorage.setItem("nextCost", 0);
+        nextCost = 0;
+        updateNextCostDisplay();
+        historyContainer.innerHTML = "";
+    }
 });
 
-// Gacha pull
+// Pull Skylander
 pullBtn.addEventListener("click", () => {
     const roll = Math.random() * 100;
     let cumulative = 0;
@@ -82,7 +79,7 @@ pullBtn.addEventListener("click", () => {
 
     const chosenSkylander = chosenRarity.pool[Math.floor(Math.random() * chosenRarity.pool.length)];
 
-    // Display result with rarity glow
+    // Display result with glow
     resultContainer.innerHTML = "";
     const card = document.createElement("div");
     card.className = "result-card";
@@ -90,11 +87,11 @@ pullBtn.addEventListener("click", () => {
     card.textContent = `${chosenRarity.stars}★ ${chosenSkylander}`;
     resultContainer.appendChild(card);
 
-    // Save pull to history
+    // Save pull and reload history
     saveHistory(`${chosenRarity.stars}★ ${chosenSkylander}`);
     loadHistory();
 
-    // Increase next cost
+    // Increase cost
     if (nextCost === 0) {
         nextCost = 300;
     } else {
