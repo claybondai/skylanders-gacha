@@ -57,3 +57,12 @@ function rollPull() {
 
 document.getElementById("pullBtn").addEventListener("click", rollPull);
 updateHistoryDisplay();
+
+
+// Clear History Button functionality
+document.getElementById("clearHistoryBtn").addEventListener("click", () => {
+    if (confirm("Clear pull history?")) {
+        localStorage.removeItem("pullHistory");
+        document.getElementById("historyContainer").innerHTML = "";
+    }
+});
