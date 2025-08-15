@@ -17,13 +17,13 @@ const oneStar = [
 
 // Rarity odds
 const odds = {
-    four: 0.05, // 5%
-    three: 0.15, // 15%
-    two: 0.30, // 30%
-    one: 0.50  // 50%
+    four: 0.05,
+    three: 0.15,
+    two: 0.30,
+    one: 0.50
 };
 
-// Load history from localStorage
+// Load history
 let history = JSON.parse(localStorage.getItem("pullHistory")) || [];
 
 const resultContainer = document.getElementById("resultContainer");
@@ -31,7 +31,7 @@ const historyContainer = document.getElementById("historyContainer");
 const pullBtn = document.getElementById("pullBtn");
 const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 
-// Display history on page load
+// Display history on load
 updateHistoryDisplay();
 
 pullBtn.addEventListener("click", () => {
@@ -65,20 +65,19 @@ function randomFrom(array) {
 }
 
 function showResult(pull) {
-    const colors = {
-        4: "red",
-        3: "purple",
-        2: "gold",
-        1: "bronze"
+    const glowClasses = {
+        4: "red-glow",
+        3: "purple-glow",
+        2: "gold-glow",
+        1: "bronze-glow"
     };
 
     resultContainer.innerHTML = "";
 
     const card = document.createElement("div");
-    card.className = "skylander-card";
-    card.style.borderColor = colors[pull.stars];
+    card.className = `skylander-card ${glowClasses[pull.stars]}`;
 
-    // Add animation effect
+    // Animation
     card.style.transform = "scale(0)";
     setTimeout(() => {
         card.style.transform = "scale(1)";
@@ -86,7 +85,7 @@ function showResult(pull) {
     }, 10);
 
     card.innerHTML = `
-        <h3 style="color:${colors[pull.stars]}">${pull.name}</h3>
+        <h3>${pull.name}</h3>
         <p>${"★".repeat(pull.stars)}</p>
     `;
 
@@ -104,7 +103,7 @@ function updateHistoryDisplay() {
     history.forEach(pull => {
         const item = document.createElement("div");
         item.className = "history-item";
-        const colors = { 4: "red", 3: "purple", 2: "gold", 1: "bronze" };
+        const colors = { 4: "red", 3: "purple", 2: "gold", 1: "#cd7f32" };
         item.style.color = colors[pull.stars];
         item.textContent = `${pull.name} (${pull.stars}★)`;
         historyContainer.appendChild(item);
