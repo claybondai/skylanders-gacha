@@ -86,4 +86,20 @@ pullBtn.addEventListener("click", () => {
     resultContainer.innerHTML = "";
     const card = document.createElement("div");
     card.className = "result-card";
-    card.style.border = `5px s
+    card.style.border = `5px solid ${chosenRarity.color}`;
+    card.textContent = `${chosenRarity.stars}★ ${chosenSkylander}`;
+    resultContainer.appendChild(card);
+
+    // Save pull to history
+    saveHistory(`${chosenRarity.stars}★ ${chosenSkylander}`);
+    loadHistory();
+
+    // Increase next cost
+    if (nextCost === 0) {
+        nextCost = 300;
+    } else {
+        nextCost += 200;
+    }
+    localStorage.setItem("nextCost", nextCost);
+    updateNextCostDisplay();
+});
