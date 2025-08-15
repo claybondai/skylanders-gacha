@@ -78,6 +78,8 @@ pullBtn.addEventListener("click", () => {
     resultContainer.innerHTML = "";
     const card = document.createElement("div");
     card.className = "result-card";
+    card.style.backgroundColor = "#000"; // dark background so glow is visible
+    card.style.color = "#fff";
     card.style.border = `5px solid ${chosenRarity.color}`;
     card.style.boxShadow = `0 0 20px 5px ${chosenRarity.color}`;
     card.textContent = `${chosenRarity.stars}★ ${chosenSkylander}`;
@@ -86,9 +88,9 @@ pullBtn.addEventListener("click", () => {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = `
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 15px 3px ${chosenRarity.color}; }
-            50% { box-shadow: 0 0 30px 10px ${chosenRarity.color}; }
-            100% { box-shadow: 0 0 15px 3px ${chosenRarity.color}; }
+            0% { box-shadow: 0 0 15px 3px ${chosenRarity.color}; border-color: ${chosenRarity.color}; }
+            50% { box-shadow: 0 0 30px 10px ${chosenRarity.color}; border-color: ${chosenRarity.color}; }
+            100% { box-shadow: 0 0 15px 3px ${chosenRarity.color}; border-color: ${chosenRarity.color}; }
         }
     `;
     document.head.appendChild(styleTag);
