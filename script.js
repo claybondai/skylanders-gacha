@@ -13,7 +13,7 @@ const odds = [
     { stars: 4, chance: 5, pool: fourStar, color: "red" },
     { stars: 3, chance: 15, pool: threeStar, color: "purple" },
     { stars: 2, chance: 30, pool: twoStar, color: "gold" },
-    { stars: 1, chance: 50, pool: oneStar, color: "bronze" }
+    { stars: 1, chance: 50, pool: oneStar, color: "white" }
 ];
 
 // Elements
@@ -27,12 +27,10 @@ const costDisplay = document.getElementById("nextCostDisplay");
 let nextCost = parseInt(localStorage.getItem("nextCost")) || 0;
 updateNextCostDisplay();
 
-// Update cost display
 function updateNextCostDisplay() {
     costDisplay.textContent = `Next Pull Cost: ${nextCost} gold`;
 }
 
-// Load history
 function loadHistory() {
     const savedHistory = JSON.parse(localStorage.getItem("pullHistory")) || [];
     historyContainer.innerHTML = "";
@@ -45,14 +43,12 @@ function loadHistory() {
 }
 loadHistory();
 
-// Save to history
 function saveHistory(entry) {
     const history = JSON.parse(localStorage.getItem("pullHistory")) || [];
     history.unshift(entry);
     localStorage.setItem("pullHistory", JSON.stringify(history));
 }
 
-// Clear history + reset cost with confirmation
 clearHistoryBtn.addEventListener("click", () => {
     if (confirm("Are you sure you want to clear history and reset the gold cost?")) {
         localStorage.removeItem("pullHistory");
@@ -63,7 +59,6 @@ clearHistoryBtn.addEventListener("click", () => {
     }
 });
 
-// Pull Skylander
 pullBtn.addEventListener("click", () => {
     const roll = Math.random() * 100;
     let cumulative = 0;
@@ -79,15 +74,29 @@ pullBtn.addEventListener("click", () => {
 
     const chosenSkylander = chosenRarity.pool[Math.floor(Math.random() * chosenRarity.pool.length)];
 
-    // Display result with glow
+    // Display result with pulsing glow
     resultContainer.innerHTML = "";
     const card = document.createElement("div");
     card.className = "result-card";
     card.style.border = `5px solid ${chosenRarity.color}`;
+    card.style.boxShadow = `0 0 20px 5px ${chosenRarity.color}`;
     card.textContent = `${chosenRarity.stars}★ ${chosenSkylander}`;
+
+    // Add pulsing animation
+    const styleTag = document.createElement("style");
+    styleTag.innerHTML = `
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px 3px ${chosenRarity.color}; }
+            50% { box-shadow: 0 0 30px 10px ${chosenRarity.color}; }
+            100% { box-shadow: 0 0 15px 3px ${chosenRarity.color}; }
+        }
+    `;
+    document.head.appendChild(styleTag);
+    card.style.animation = "pulseGlow 1.5s infinite ease-in-out";
+
     resultContainer.appendChild(card);
 
-    // Save pull and reload history
+    // Save pull
     saveHistory(`${chosenRarity.stars}★ ${chosenSkylander}`);
     loadHistory();
 
