@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #1e1e1e;
+    color: white;
+}
+.container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+}
+.orb {
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    border-radius: 50%;
+    background-color: grey;
+    transition: background-color 0.5s ease;
+}
+/* Rarity colors */
+.glow-4 { background-color: red; }
+.glow-3 { background-color: purple; }
+.glow-2 { background-color: gold; }
+.glow-1 { background-color: peru; }
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+#history {
+    list-style: none;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
