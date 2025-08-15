@@ -1,5 +1,5 @@
 // Skylander pools
-const fourStar = ["Jawbreaker", "Bushwhack", "Thunderbolt", "Tuff Luck", "Gusto"];
+const fourStar = ["Snap Shot", "Bushwhack", "Jawbreaker", "Wildfire", "Gusto"];
 const threeStar = [
     "Magna Charge", "Free Ranger", "Rattle Shake", "Hoot Loop",
     "Blades", "Fist Bump", "Pop Thorn", "Roller Brawl"
