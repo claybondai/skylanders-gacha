@@ -11,7 +11,7 @@ const oneStar = [
     "Chop Chop", "Spyro", "Stealth Elf", "Gill Grunt", "Trigger Happy", "Whirlwind",
     "Boomer", "Voodood", "Zap", "Wrecking Ball", "Dino-Rang", "Eruptor",
     "Flameslinger", "Ignitor", "Sunburn", "Warnado", "Wham-Shell", "Hex",
-    "Double Trouble", "Prism Break", "Sonic Boom", "Drill Sergeant", "Camouflage",
+    "Double Trouble", "Prism Break", "Sonic Boom", "Drill Sergeant", "Camo",
     "Ghost Roaster"
 ];
 
