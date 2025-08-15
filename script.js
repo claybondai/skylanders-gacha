@@ -1,68 +1,112 @@
-const pool4 = ["Snap Shot", "Wallop", "Wildfire", "Blastermind", "Tuff Luck"];
-const pool3 = ["Magna Charge", "Wash Buckler", "Hoot Loop", "Doom Stone", "Blades", "Fist Bump", "Pop Thorn", "Roller Brawl"];
-const pool2 = ["Tree Rex", "Bouncer", "Crusher", "Ninjini", "Thumpback", "Swarm"];
-const pool1 = [
-    "Spyro", "Double Trouble", "Pop Fizz",
-    "Gill Grunt", "Slam Bam", "Chill",
-    "Trigger Happy", "Drobot", "Sprocket",
-    "Stealth Elf", "Zook", "Shroomboom",
-    "Eruptor", "Flameslinger", "Hot Dog",
-    "Terrafin", "Prism Break", "Flashwing",
-    "Whirlwind", "Jet-Vac", "Sonic Boom",
-    "Chop Chop", "Hex", "Fright Rider"
+// Skylander pools
+const fourStar = ["Jawbreaker", "Bushwhack", "Thunderbolt", "Tuff Luck", "Gusto"];
+const threeStar = [
+    "Magna Charge", "Free Ranger", "Rattle Shake", "Hoot Loop",
+    "Blades", "Fist Bump", "Pop Thorn", "Roller Brawl"
+];
+const twoStar = [
+    "Tree Rex", "Bouncer", "Crusher", "Hot Head", "Swarm", "Eye-Brawl"
+];
+const oneStar = [
+    "Chop Chop", "Spyro", "Stealth Elf", "Gill Grunt", "Trigger Happy", "Whirlwind",
+    "Boomer", "Voodood", "Zap", "Wrecking Ball", "Dino-Rang", "Eruptor",
+    "Flameslinger", "Ignitor", "Sunburn", "Warnado", "Wham-Shell", "Hex",
+    "Double Trouble", "Prism Break", "Sonic Boom", "Drill Sergeant", "Camouflage",
+    "Ghost Roaster"
 ];
 
-const odds = { "4": 0.05, "3": 0.15, "2": 0.30, "1": 0.50 };
-let pityCounter = parseInt(localStorage.getItem("pityCounter") || "0");
-let history = JSON.parse(localStorage.getItem("history") || "[]");
+// Rarity odds
+const odds = {
+    four: 0.05, // 5%
+    three: 0.15, // 15%
+    two: 0.30, // 30%
+    one: 0.50  // 50%
+};
 
-function updateHistoryDisplay() {
-    const list = document.getElementById("history");
-    list.innerHTML = "";
-    history.forEach((pull, i) => {
-        const li = document.createElement("li");
-        li.textContent = `#${i+1}: ${pull.name} (${pull.stars}★)`;
-        list.appendChild(li);
-    });
-    document.getElementById("pityCounter").textContent = `Pity Counter: ${pityCounter}`;
-}
+// Load history from localStorage
+let history = JSON.parse(localStorage.getItem("pullHistory")) || [];
 
-function rollPull() {
-    let stars;
-    if (pityCounter >= 9) {
-        stars = Math.random() < (odds["4"] / (odds["4"] + odds["3"])) ? 4 : 3;
-    } else {
-        const roll = Math.random();
-        if (roll < odds["4"]) stars = 4;
-        else if (roll < odds["4"] + odds["3"]) stars = 3;
-        else if (roll < odds["4"] + odds["3"] + odds["2"]) stars = 2;
-        else stars = 1;
-    }
+const resultContainer = document.getElementById("resultContainer");
+const historyContainer = document.getElementById("historyContainer");
+const pullBtn = document.getElementById("pullBtn");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 
-    let pool = stars === 4 ? pool4 : stars === 3 ? pool3 : stars === 2 ? pool2 : pool1;
-    const character = pool[Math.floor(Math.random() * pool.length)];
-
-    pityCounter = stars >= 3 ? 0 : pityCounter + 1;
-    history.push({ name: character, stars });
-    localStorage.setItem("pityCounter", pityCounter);
-    localStorage.setItem("history", JSON.stringify(history));
-
-    const orb = document.getElementById("orb");
-    orb.className = "orb glow-" + stars;
-    setTimeout(() => {
-        document.getElementById("result").textContent = `${character} (${stars}★)`;
-        updateHistoryDisplay();
-    }, 700);
-}
-
-document.getElementById("pullBtn").addEventListener("click", rollPull);
+// Display history on page load
 updateHistoryDisplay();
 
-
-// Clear History Button functionality
-document.getElementById("clearHistoryBtn").addEventListener("click", () => {
-    if (confirm("Clear pull history?")) {
-        localStorage.removeItem("pullHistory");
-        document.getElementById("historyContainer").innerHTML = "";
-    }
+pullBtn.addEventListener("click", () => {
+    const pulled = pullSkylander();
+    showResult(pulled);
+    saveToHistory(pulled);
+    updateHistoryDisplay();
 });
+
+clearHistoryBtn.addEventListener("click", () => {
+    history = [];
+    localStorage.removeItem("pullHistory");
+    updateHistoryDisplay();
+});
+
+function pullSkylander() {
+    const roll = Math.random();
+    if (roll < odds.four) {
+        return { name: randomFrom(fourStar), stars: 4 };
+    } else if (roll < odds.four + odds.three) {
+        return { name: randomFrom(threeStar), stars: 3 };
+    } else if (roll < odds.four + odds.three + odds.two) {
+        return { name: randomFrom(twoStar), stars: 2 };
+    } else {
+        return { name: randomFrom(oneStar), stars: 1 };
+    }
+}
+
+function randomFrom(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+function showResult(pull) {
+    const colors = {
+        4: "red",
+        3: "purple",
+        2: "gold",
+        1: "bronze"
+    };
+
+    resultContainer.innerHTML = "";
+
+    const card = document.createElement("div");
+    card.className = "skylander-card";
+    card.style.borderColor = colors[pull.stars];
+
+    // Add animation effect
+    card.style.transform = "scale(0)";
+    setTimeout(() => {
+        card.style.transform = "scale(1)";
+        card.style.transition = "transform 0.3s ease";
+    }, 10);
+
+    card.innerHTML = `
+        <h3 style="color:${colors[pull.stars]}">${pull.name}</h3>
+        <p>${"★".repeat(pull.stars)}</p>
+    `;
+
+    resultContainer.appendChild(card);
+}
+
+function saveToHistory(pull) {
+    history.unshift(pull);
+    if (history.length > 50) history.pop();
+    localStorage.setItem("pullHistory", JSON.stringify(history));
+}
+
+function updateHistoryDisplay() {
+    historyContainer.innerHTML = "";
+    history.forEach(pull => {
+        const item = document.createElement("div");
+        item.className = "history-item";
+        const colors = { 4: "red", 3: "purple", 2: "gold", 1: "bronze" };
+        item.style.color = colors[pull.stars];
+        item.textContent = `${pull.name} (${pull.stars}★)`;
+        historyContainer.appendChild(item);
+    });
+}
