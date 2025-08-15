@@ -23,9 +23,12 @@ const resultContainer = document.getElementById("resultContainer");
 const historyContainer = document.getElementById("historyContainer");
 const costDisplay = document.getElementById("nextCostDisplay");
 
-// Load cost from storage or start at 0
+// Load from localStorage
 let nextCost = parseInt(localStorage.getItem("nextCost")) || 0;
+let pityCounter = parseInt(localStorage.getItem("pityCounter")) || 0;
+
 updateNextCostDisplay();
+loadHistory();
 
 function updateNextCostDisplay() {
     costDisplay.textContent = `Next Pull Cost: ${nextCost} gold`;
@@ -41,7 +44,6 @@ function loadHistory() {
         historyContainer.appendChild(div);
     });
 }
-loadHistory();
 
 function saveHistory(entry) {
     const history = JSON.parse(localStorage.getItem("pullHistory")) || [];
@@ -53,32 +55,52 @@ clearHistoryBtn.addEventListener("click", () => {
     if (confirm("Are you sure you want to clear history and reset the gold cost?")) {
         localStorage.removeItem("pullHistory");
         localStorage.setItem("nextCost", 0);
+        localStorage.setItem("pityCounter", 0);
         nextCost = 0;
+        pityCounter = 0;
         updateNextCostDisplay();
         historyContainer.innerHTML = "";
     }
 });
 
 pullBtn.addEventListener("click", () => {
-    const roll = Math.random() * 100;
-    let cumulative = 0;
     let chosenRarity;
 
-    for (const rarity of odds) {
-        cumulative += rarity.chance;
-        if (roll <= cumulative) {
-            chosenRarity = rarity;
-            break;
+    // Pity system check
+    if (pityCounter >= 9) {
+        // Force at least 3★ or 4★
+        chosenRarity = Math.random() < 0.25 ? odds[0] : odds[1]; // 25% 4★, 75% 3★
+        pityCounter = 0; // reset pity
+    } else {
+        // Normal RNG
+        const roll = Math.random() * 100;
+        let cumulative = 0;
+        for (const rarity of odds) {
+            cumulative += rarity.chance;
+            if (roll <= cumulative) {
+                chosenRarity = rarity;
+                break;
+            }
+        }
+        // Reset pity if 3★ or higher, otherwise increment
+        if (chosenRarity.stars >= 3) {
+            pityCounter = 0;
+        } else {
+            pityCounter++;
         }
     }
 
+    // Save pity counter
+    localStorage.setItem("pityCounter", pityCounter);
+
+    // Pick random Skylander from chosen rarity
     const chosenSkylander = chosenRarity.pool[Math.floor(Math.random() * chosenRarity.pool.length)];
 
     // Display result with pulsing glow
     resultContainer.innerHTML = "";
     const card = document.createElement("div");
     card.className = "result-card";
-    card.style.backgroundColor = "#000"; // dark background so glow is visible
+    card.style.backgroundColor = "#000"; // dark background for glow contrast
     card.style.color = "#fff";
     card.style.border = `5px solid ${chosenRarity.color}`;
     card.style.boxShadow = `0 0 20px 5px ${chosenRarity.color}`;
@@ -102,7 +124,7 @@ pullBtn.addEventListener("click", () => {
     saveHistory(`${chosenRarity.stars}★ ${chosenSkylander}`);
     loadHistory();
 
-    // Increase cost
+    // Increase gold cost
     if (nextCost === 0) {
         nextCost = 300;
     } else {
